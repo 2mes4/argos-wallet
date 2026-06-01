@@ -1,0 +1,25 @@
+{
+  "name": "@argos-wallet/example-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Example integration app for the Argos Wallet SDK",
+  "scripts": {
+    "dev": "npx vite",
+    "build": "npx vite build",
+    "preview": "npx vite preview",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@argos-wallet/core": "*",
+    "@argos-wallet/types": "*",
+    "@argos-wallet/network-polygon": "*",
+    "@argos-wallet/network-base": "*",
+    "@argos-wallet/regional-sepa": "*",
+    "@argos-wallet/storage-memory": "*",
+    "@argos-wallet/ui": "*"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0",
+    "typescript": "^5.7.0"
+  }
+}

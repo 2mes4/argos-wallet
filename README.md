@@ -154,11 +154,11 @@ curl http://localhost:8080/v1/health
 curl -X POST http://localhost:8080/v1/tenants/register \
   -H "Content-Type: application/json" \
   -d '{"name": "My App"}'
-# → {"tenant": {...}, "api_key": {"api_key": "ow_..."}}
+# → {"tenant": {...}, "api_key": {"api_key": "argos_..."}}
 
 # Create a wallet
 curl -X POST http://localhost:8080/v1/wallets \
-  -H "Authorization: Bearer ow_..." \
+  -H "Authorization: Bearer argos_..." \
   -H "Content-Type: application/json" \
   -d '{"external_id": "user-1", "networks": ["polygon"]}'
 ```
@@ -169,43 +169,65 @@ curl -X POST http://localhost:8080/v1/wallets \
 
 ```
 argos-wallet/
-├── platform/              # Go backend
+├── platform/              # Go backend (multi-tenant wallet infrastructure)
 │   ├── cmd/
 │   │   ├── server/        # HTTP API server
 │   │   └── worker/        # Background job worker
 │   ├── internal/
-│   │   ├── blockchain/    # EVM client (signing, RPC, ERC20)
+│   │   ├── blockchain/    # EVM + Solana + ERC-4337
 │   │   ├── config/        # Environment configuration
 │   │   ├── database/      # PostgreSQL connection + migrations
 │   │   ├── domain/        # Core domain models
-│   │   ├── handler/       # HTTP handlers (wallet, tx, routing, identity)
+│   │   ├── firebase/      # Firestore real-time sync
+│   │   ├── handler/       # HTTP handlers (wallet, tx, routing, identity, webhook)
 │   │   ├── middleware/    # API key auth, rate limiting
 │   │   ├── repository/    # Database queries (pgx)
-│   │   ├── service/       # Business logic
+│   │   ├── service/       # Business logic (wallet, tx, routing, webhook, multisig, paymaster, hardware)
+│   │   ├── vault/         # HashiCorp Vault client
 │   │   └── worker/        # Background jobs
-│   └── tests/integration/ # 22 integration tests (100% pass)
+│   └── tests/integration/ # Integration tests
 │
 ├── web/                   # Next.js dashboard
 │   └── src/
-│       ├── app/           # App router pages
-│       │   ├── login/     # Registration + sign-in
-│       │   └── dashboard/ # Overview, wallets, txs, rules, settings
+│       ├── app/           # App router pages (login, dashboard)
 │       ├── components/    # Logo, shared UI
 │       └── lib/           # API client, utilities
 │
-├── sdks/                  # Open-source SDKs
+├── sdks/                  # Official SDKs
 │   ├── go/                # Go SDK
-│   ├── typescript/        # TypeScript SDK
-│   └── dart/              # Dart SDK
+│   ├── typescript/        # TypeScript SDK (@argos-wallet/sdk)
+│   └── dart/              # Dart SDK (argos_wallet)
+│
+├── packages/              # TypeScript monorepo packages
+│   ├── core/              # @argos-wallet/core — engine, wallet/tx orchestration
+│   ├── types/             # @argos-wallet/types — shared interfaces
+│   ├── react/             # @argos-wallet/react — hooks + components
+│   ├── ui/                # @argos-wallet/ui — Lit Web Components
+│   ├── network-evm/       # @argos-wallet/network-evm — generic EVM provider
+│   ├── network-ethereum/  # @argos-wallet/network-ethereum
+│   ├── network-polygon/   # @argos-wallet/network-polygon
+│   ├── network-base/      # @argos-wallet/network-base
+│   ├── regional-americas/ # @argos-wallet/regional-americas — ACH, SPEI, Stripe
+│   ├── regional-sepa/     # @argos-wallet/regional-sepa — Monerium, Stripe
+│   ├── storage-memory/    # @argos-wallet/storage-memory
+│   ├── connector-metamask/     # @argos-wallet/connector-metamask
+│   ├── connector-walletconnect/ # @argos-wallet/connector-walletconnect
+│   └── flutter/           # argos_wallet_flutter — Flutter widgets
+│
+├── apps/example/          # Vite + Web Components example app
 │
 ├── infra/                 # Infrastructure
 │   ├── k3s/               # Kubernetes manifests
 │   ├── scripts/           # Deploy scripts
 │   └── firebase/          # Firestore rules + config
 │
-├── docs/                  # Architecture, API reference
-│   ├── ARCHITECTURE.md
-│   └── API.md
+├── docs/                  # Architecture, API reference, guides
+│   ├── architecture/      # System architecture
+│   ├── api/               # SDK API reference
+│   ├── api-reference/     # REST API reference
+│   ├── getting-started/   # Installation guides
+│   ├── deployment/        # Production deployment
+│   └── ...                # UI components, React/Flutter SDKs
 │
 ├── LICENSE                # BSL 1.1
 ├── CONTRIBUTING.md
@@ -221,7 +243,7 @@ argos-wallet/
 All requests require an API key in the `Authorization` header:
 
 ```
-Authorization: Bearer ow_your_api_key_here
+Authorization: Bearer argos_your_api_key_here
 ```
 
 ### Endpoints
@@ -248,7 +270,7 @@ Authorization: Bearer ow_your_api_key_here
 | `POST` | `/v1/identity/sign-message` | Sign message with wallet key |
 | `POST` | `/v1/identity/verify-signature` | Verify a signature |
 
-See [docs/API.md](docs/API.md) for detailed request/response schemas.
+See [docs/api-reference/reference.md](docs/api-reference/reference.md) for detailed request/response schemas.
 
 ---
 

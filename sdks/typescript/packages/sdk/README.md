@@ -20,7 +20,7 @@ yarn add @argos-wallet/sdk
 import { Argos } from '@argos-wallet/sdk';
 
 const argos = new Argos({
-  apiKey: 'ow_your_api_key',
+  apiKey: 'argos_your_api_key',
   apiUrl: 'http://localhost:8080', // your self-hosted instance
 });
 

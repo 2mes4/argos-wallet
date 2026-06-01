@@ -36,7 +36,7 @@ class ArgosApiException implements Exception {
 /// ```dart
 /// final client = ArgosClient(
 ///   config: ArgosConfig(
-///     apiKey: 'ow_your_api_key',
+///     apiKey: 'argos_your_api_key',
 ///     apiUrl: 'http://localhost:8080',
 ///   ),
 /// );

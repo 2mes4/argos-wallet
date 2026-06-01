@@ -1,8 +1,8 @@
 {
-  "name": "@open-wallet/sdk-typescript",
-  "version": "0.1.0",
+  "name": "@argos-wallet/sdk-typescript",
+  "version": "0.2.0",
   "private": true,
-  "description": "Open Wallet TypeScript SDK monorepo",
+  "description": "Argos Wallet TypeScript SDK monorepo",
   "workspaces": ["packages/*"],
   "scripts": {
     "build": "turbo build",

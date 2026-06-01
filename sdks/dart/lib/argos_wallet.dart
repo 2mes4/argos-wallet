@@ -5,7 +5,7 @@
 /// ```dart
 /// final client = ArgosClient(
 ///   apiUrl: 'http://localhost:8080',
-///   apiKey: 'ow_your_api_key',
+///   apiKey: 'argos_your_api_key',
 /// );
 ///
 /// final wallet = await client.wallets.create(

@@ -1,0 +1,99 @@
+name: SDK CI
+
+on:
+  push:
+    paths:
+      - 'sdks/**'
+  pull_request:
+    paths:
+      - 'sdks/**'
+
+jobs:
+  go-sdk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - name: Test
+        working-directory: sdks/go
+        run: go test ./... -v -count=1
+      - name: Vet
+        working-directory: sdks/go
+        run: go vet ./...
+
+  typescript-sdk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install
+        working-directory: sdks/typescript
+        run: npm install
+      - name: Build
+        working-directory: sdks/typescript
+        run: npx turbo build
+      - name: Typecheck
+        working-directory: sdks/typescript
+        run: npx turbo typecheck
+
+  dart-sdk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 3.5.0
+      - name: Install dependencies
+        working-directory: sdks/dart
+        run: dart pub get
+      - name: Analyze
+        working-directory: sdks/dart
+        run: dart analyze
+      - name: Test
+        working-directory: sdks/dart
+        run: dart test
+
+  publish-go:
+    needs: go-sdk
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/sdk-go/v')
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify tag
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "Publishing $TAG"
+
+  publish-ts:
+    needs: typescript-sdk
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/sdk-ts/v')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Build
+        working-directory: sdks/typescript
+        run: npm install && npx turbo build
+      - name: Publish
+        working-directory: sdks/typescript/packages/sdk
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-dart:
+    needs: dart-sdk
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/sdk-dart/v')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      - name: Publish
+        working-directory: sdks/dart
+        run: dart pub publish --force

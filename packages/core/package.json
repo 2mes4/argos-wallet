@@ -1,0 +1,39 @@
+{
+  "name": "@argos-wallet/core",
+  "version": "0.1.0",
+  "description": "Core engine for the Argos Wallet SDK — wallet creation, transaction orchestration, and provider management",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --config ../../jest.config.js",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@argos-wallet/types": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/2mes4/argos-wallet",
+    "directory": "packages/core"
+  },
+  "keywords": ["wallet", "core", "engine", "web3", "sdk"]
+}

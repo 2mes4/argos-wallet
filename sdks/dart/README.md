@@ -21,7 +21,7 @@ import 'package:argos_wallet/argos_wallet.dart';
 final client = ArgosClient(
   config: ArgosConfig(
     apiUrl: 'http://localhost:8080',
-    apiKey: 'ow_your_api_key',
+    apiKey: 'argos_your_api_key',
   ),
 );
 

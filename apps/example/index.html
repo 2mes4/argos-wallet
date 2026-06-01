@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Argos Wallet SDK — Example Integration</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f7;
+      min-height: 100vh;
+    }
+    .app-header {
+      background: #1a1a2e;
+      color: #fff;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .app-header h1 { font-size: 20px; font-weight: 700; }
+    .app-header span { font-size: 13px; opacity: 0.7; }
+    .app-layout {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .section { display: flex; flex-direction: column; gap: 24px; }
+    .full-width { grid-column: 1 / -1; }
+    .info-bar {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      font-size: 14px;
+    }
+    .info-bar code {
+      background: #f0f1f3;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-header">
+    <h1>Argos Wallet SDK</h1>
+    <span>Example Integration App</span>
+  </div>
+
+  <div class="app-layout">
+    <div class="full-width info-bar">
+      <span><strong>Wallet ID:</strong> <code id="wallet-id">Loading...</code></span>
+      <span><strong>Network:</strong> Polygon Amoy (Testnet)</span>
+      <span><strong>Fiat:</strong> SEPA (Mock)</span>
+    </div>
+
+    <div class="section">
+      <argos-card
+        id="balance-card"
+        supported-tokens="USDC,EURC,POL"
+      ></argos-wallet-card>
+
+      <crypto-send-form
+        id="send-form"
+        network="polygon"
+        token="USDC"
+      ></crypto-send-form>
+    </div>
+
+    <div class="section">
+      <fiat-bridge-wizard
+        id="fiat-wizard"
+        default-mode="on-ramp"
+      ></fiat-bridge-wizard>
+    </div>
+
+    <div class="full-width">
+      <tx-history-list id="tx-history" limit="10"></tx-history-list>
+    </div>
+  </div>
+
+  <script type="module">
+    import '@argos-wallet/ui';
+
+    const WALLET_ID_KEY = 'ow-example-wallet-id';
+
+    async function init() {
+      const walletId = localStorage.getItem(WALLET_ID_KEY);
+      document.getElementById('wallet-id').textContent = walletId || 'Not created yet';
+
+      if (!walletId) {
+        console.log('No wallet found. In a real app, you would call:');
+        console.log('  const sdk = new Argos({ storage, networks, fiat });');
+        console.log('  const wallet = await sdk.wallets.createWallet();');
+        console.log('  // Save wallet.walletId to your database');
+        return;
+      }
+
+      document.getElementById('balance-card').setAttribute('wallet-id', walletId);
+      document.getElementById('balance-card').setAttribute('api-url', '/api');
+      document.getElementById('send-form').setAttribute('wallet-id', walletId);
+      document.getElementById('send-form').setAttribute('api-url', '/api');
+      document.getElementById('fiat-wizard').setAttribute('wallet-id', walletId);
+      document.getElementById('fiat-wizard').setAttribute('api-url', '/api');
+      document.getElementById('tx-history').setAttribute('wallet-id', walletId);
+      document.getElementById('tx-history').setAttribute('api-url', '/api');
+    }
+
+    init();
+  </script>
+</body>
+</html>

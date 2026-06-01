@@ -2,9 +2,9 @@
 
 ## 0.2.0
 
-- Rebranded from `open_wallet` to `argos_wallet`
+- Rebranded from `argos_wallet` to `argos_wallet`
 - Added webhook management (`WebhookResource`)
-- Renamed `OpenWalletClient` to `ArgosClient`
+- Renamed `ArgosClient` to `ArgosClient`
 - Renamed `WalletConfig` to `ArgosConfig`
 - Added query parameter support for GET requests
 - Updated User-Agent header to `argos-wallet-sdk-dart/0.2.0`

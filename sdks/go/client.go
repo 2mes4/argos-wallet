@@ -1,4 +1,4 @@
-package openwallet
+package argoswallet
 
 import (
 	"bytes"
@@ -29,7 +29,7 @@ type Client struct {
 
 func NewClient(cfg Config) (*Client, error) {
 	if cfg.BaseURL == "" {
-		cfg.BaseURL = "https://api.openwallet.dev"
+		cfg.BaseURL = "https://api.argoswallet.dev"
 	}
 
 	baseURL, err := url.Parse(cfg.BaseURL)
@@ -74,7 +74,7 @@ func (c *Client) doRequest(method, path string, body interface{}) (*http.Respons
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+c.config.APIKey)
 	req.Header.Set("X-API-Key", c.config.APIKey)
-	req.Header.Set("User-Agent", "openwallet-sdk-go/0.1.0")
+	req.Header.Set("User-Agent", "argoswallet-sdk-go/0.1.0")
 
 	return c.httpClient.Do(req)
 }

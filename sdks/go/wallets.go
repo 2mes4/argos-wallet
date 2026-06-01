@@ -1,4 +1,4 @@
-package openwallet
+package argoswallet
 
 import (
 	"encoding/json"

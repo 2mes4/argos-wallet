@@ -1,0 +1,26 @@
+name: argos_wallet_flutter
+description: Flutter widgets for Argos Wallet — WalletCard, ConnectWalletButton, TransactionList, and API service
+version: 0.2.0
+homepage: https://github.com/2mes4/argos-wallet
+repository: https://github.com/2mes4/argos-wallet
+issue_tracker: https://github.com/2mes4/argos-wallet/issues
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+topics:
+  - crypto
+  - wallet
+  - web3
+  - blockchain
+  - flutter

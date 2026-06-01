@@ -1,8 +1,6 @@
-package openwallet
+package argoswallet
 
 import (
-	"fmt"
-
 	"github.com/google/uuid"
 )
 

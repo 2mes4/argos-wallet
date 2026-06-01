@@ -1,0 +1,28 @@
+{
+  "name": "@argos-wallet/network-ethereum",
+  "version": "0.1.0",
+  "description": "Ethereum network preset for Argos Wallet SDK",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "tsc --noEmit",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@argos-wallet/types": "*",
+    "@argos-wallet/network-evm": "*"
+  },
+  "devDependencies": { "typescript": "^5.7.0" },
+  "license": "MIT",
+  "publishConfig": { "access": "public" },
+  "keywords": ["wallet", "ethereum", "blockchain"]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "@argos-wallet/storage-memory",
+  "version": "0.1.0",
+  "description": "In-memory storage provider for Argos Wallet SDK — ideal for development and testing",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "tsc --noEmit",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@argos-wallet/types": "*"
+  },
+  "devDependencies": { "typescript": "^5.7.0" },
+  "license": "MIT",
+  "publishConfig": { "access": "public" },
+  "keywords": ["wallet", "storage", "memory", "testing", "mock"]
+}

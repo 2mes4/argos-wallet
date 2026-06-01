@@ -135,7 +135,7 @@ func sha256Hash(s string) string {
 
 func generateAPIKey() string {
 	id := uuid.New().String()[:16]
-	return "ow_" + id + "_" + uuid.New().String()[:16]
+	return "argos_" + id + "_" + uuid.New().String()[:16]
 }
 
 func apiKeyPrefix(key string) string {

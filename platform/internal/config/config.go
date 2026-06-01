@@ -77,7 +77,7 @@ func Load() *Config {
 			Config:    getEnv("FIREBASE_CONFIG", ""),
 		},
 		Blockchain: BlockchainConfig{
-			MnemonicSeedID:  getEnv("VAULT_MNEMONIC_PATH", "secret/data/openwallet/mnemonic"),
+			MnemonicSeedID:  getEnv("VAULT_MNEMONIC_PATH", "secret/data/argoswallet/mnemonic"),
 			DefaultNetworks: getEnvSlice("DEFAULT_NETWORKS", []string{"polygon", "ethereum", "base"}),
 			RPCURLs: map[string]string{
 				"polygon":         getEnv("RPC_POLYGON", "https://polygon-rpc.com"),
