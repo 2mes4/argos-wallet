@@ -20,7 +20,7 @@ export class RoutingResource {
     ruleId: string,
     params: Partial<CreateRuleParams>,
   ): Promise<RoutingRule> {
-    return this.client.put<RoutingRule>(`/v1/routing/rules/${ruleId}`, params);
+    return this.client.post<RoutingRule>(`/v1/routing/rules/${ruleId}`, params);
   }
 
   async deleteRule(ruleId: string): Promise<void> {

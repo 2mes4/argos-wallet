@@ -2,7 +2,7 @@ import { APIError } from './errors';
 
 export interface ClientConfig {
   apiKey: string;
-  baseURL?: string;
+  apiUrl?: string;
 }
 
 export class HttpClient {
@@ -11,7 +11,7 @@ export class HttpClient {
 
   constructor(config: ClientConfig) {
     this.apiKey = config.apiKey;
-    this.baseURL = config.baseURL || 'https://api.openwallet.dev';
+    this.baseURL = config.apiUrl || 'http://localhost:8080';
   }
 
   async request<T>(method: string, path: string, body?: unknown): Promise<T> {
@@ -19,7 +19,7 @@ export class HttpClient {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${this.apiKey}`,
       'X-API-Key': this.apiKey,
-      'User-Agent': 'openwallet-sdk-ts/0.1.0',
+      'User-Agent': 'argos-wallet-sdk-ts/0.2.0',
     };
 
     const response = await fetch(`${this.baseURL}${path}`, {
@@ -46,10 +46,6 @@ export class HttpClient {
 
   post<T>(path: string, body?: unknown): Promise<T> {
     return this.request<T>('POST', path, body);
-  }
-
-  put<T>(path: string, body?: unknown): Promise<T> {
-    return this.request<T>('PUT', path, body);
   }
 
   delete<T>(path: string): Promise<T> {

@@ -19,10 +19,12 @@ import (
 	"github.com/2mes4/argos-wallet/platform/internal/config"
 	"github.com/2mes4/argos-wallet/platform/internal/database"
 	"github.com/2mes4/argos-wallet/platform/internal/domain"
+	firestore "github.com/2mes4/argos-wallet/platform/internal/firebase"
 	"github.com/2mes4/argos-wallet/platform/internal/handler"
 	mw "github.com/2mes4/argos-wallet/platform/internal/middleware"
 	"github.com/2mes4/argos-wallet/platform/internal/repository"
 	"github.com/2mes4/argos-wallet/platform/internal/service"
+	"github.com/2mes4/argos-wallet/platform/internal/vault"
 )
 
 func main() {
@@ -46,20 +48,57 @@ func main() {
 	}
 
 	events := make(chan domain.TransactionEvent, 100)
-	_ = events
 
-	evm := blockchain.NewEVMClient(cfg.Blockchain.RPCURLs, "dev-mnemonic-do-not-use-in-production")
+	// Initialize key source: Vault or env
+	mnemonic := "dev-mnemonic-do-not-use-in-production"
+	if cfg.Vault.Token != "" && cfg.Vault.Address != "" {
+		vaultClient := vault.NewClient(cfg.Vault.Address, cfg.Vault.Token)
+		if m, err := vaultClient.GetMnemonic(ctx, cfg.Blockchain.MnemonicSeedID); err == nil {
+			mnemonic = m
+			log.Info().Msg("mnemonic loaded from vault")
+		} else {
+			log.Warn().Err(err).Msg("vault mnemonic load failed, using default")
+		}
+	}
 
+	// Blockchain clients
+	evm := blockchain.NewEVMClient(cfg.Blockchain.RPCURLs, mnemonic)
+	solana := blockchain.NewSolanaClient(cfg.Blockchain.RPCURLs["solana"])
+	aa := blockchain.NewAccountAbstractionClient(
+		os.Getenv("BUNDLER_URL"),
+		cfg.Blockchain.RPCURLs["ethereum"],
+	)
+
+	// Firebase Firestore
+	fsClient := firestore.NewClient(cfg.Firebase.ProjectID)
+	if fsClient.Enabled() {
+		log.Info().Str("project", cfg.Firebase.ProjectID).Msg("firestore sync enabled")
+	}
+
+	// Repositories
 	tenantRepo := repository.NewTenantRepo()
 	walletRepo := repository.NewWalletRepo()
 	txRepo := repository.NewTransactionRepo()
 	routingRepo := repository.NewRoutingRepo()
 
+	// Services
 	tenantSvc := service.NewTenantService(db, tenantRepo)
 	walletSvc := service.NewWalletService(db, walletRepo, evm, cfg.Blockchain.DefaultNetworks)
 	txSvc := service.NewTransactionService(db, txRepo, evm, events)
 	routingSvc := service.NewRoutingService(db, routingRepo, txSvc)
 	identitySvc := service.NewIdentityService(db, evm)
+	webhookSvc := service.NewWebhookService(db)
+	paymasterSvc := service.NewPaymasterService(db, aa)
+	multisigSvc := service.NewMultisigService(db)
+	hardwareSvc := service.NewHardwareWalletService(db)
+
+	_ = solana
+	_ = paymasterSvc
+	_ = multisigSvc
+	_ = hardwareSvc
+
+	// Event processor: handles transaction events → webhooks + firestore
+	go processEvents(events, webhookSvc, fsClient)
 
 	rateLimiter := mw.NewRateLimiter(100, time.Minute)
 
@@ -79,7 +118,7 @@ func main() {
 
 	r.Get("/v1/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"status":"ok","version":"0.1.0","service":"argos-wallet"}`))
+		w.Write([]byte(`{"status":"ok","version":"0.2.0","service":"argos-wallet"}`))
 	})
 
 	r.Get("/v1/ready", func(w http.ResponseWriter, r *http.Request) {
@@ -110,6 +149,9 @@ func main() {
 
 		identityHandler := handler.NewIdentityHandler(identitySvc)
 		r.Mount("/v1/identity", identityHandler.Routes())
+
+		webhookHandler := handler.NewWebhookHandler(webhookSvc)
+		r.Mount("/v1/webhooks", webhookHandler.Routes())
 	})
 
 	addr := fmt.Sprintf(":%d", cfg.Server.Port)
@@ -121,7 +163,7 @@ func main() {
 	}
 
 	go func() {
-		log.Info().Str("addr", addr).Msg("server starting")
+		log.Info().Str("addr", addr).Msg("argos server starting")
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal().Err(err).Msg("server failed")
 		}
@@ -140,5 +182,42 @@ func main() {
 	}
 
 	close(events)
-	log.Info().Msg("server stopped")
+	log.Info().Msg("argos server stopped")
+}
+
+func processEvents(
+	events <-chan domain.TransactionEvent,
+	webhookSvc *service.WebhookService,
+	fsClient *firestore.Client,
+) {
+	for evt := range events {
+		eventType := mapEventType(evt)
+		payload := map[string]interface{}{
+			"id":          evt.TransactionID,
+			"wallet_id":   evt.WalletID,
+			"type":        evt.Type,
+			"old_status":  evt.OldStatus,
+			"new_status":  evt.NewStatus,
+			"timestamp":   evt.Timestamp,
+		}
+
+		webhookSvc.Dispatch(context.Background(), "public", eventType, payload)
+
+		if fsClient.Enabled() {
+			fsClient.SyncTransaction(context.Background(), "", "", payload)
+		}
+	}
+}
+
+func mapEventType(evt domain.TransactionEvent) string {
+	switch evt.NewStatus {
+	case domain.TxStatusCompleted:
+		return domain.WebhookEventTransactionConfirmed
+	case domain.TxStatusFailed:
+		return domain.WebhookEventTransactionFailed
+	case domain.TxStatusInitiated:
+		return domain.WebhookEventTransactionCreated
+	default:
+		return "transaction.updated"
+	}
 }

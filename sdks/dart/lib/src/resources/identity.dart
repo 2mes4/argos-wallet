@@ -1,6 +1,6 @@
-import '../client.dart';
+import '../resource_base.dart';
 
-class IdentityResource extends Resource {
+class IdentityResource extends ArgosResource {
   IdentityResource(super.client);
 
   Future<SignMessageResponse> signMessage(String walletId, String message) async {

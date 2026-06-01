@@ -203,6 +203,65 @@ func (db *DB) CreateTenantSchema(ctx context.Context, schemaName string) error {
 		);`, s, s, s),
 
 		fmt.Sprintf(`CREATE INDEX IF NOT EXISTS idx_%s_re_rule ON %s.rule_executions(rule_id, executed_at DESC);`, s, s),
+
+		fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s.webhooks (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			url TEXT NOT NULL,
+			events JSONB NOT NULL,
+			secret VARCHAR(255),
+			active BOOLEAN DEFAULT TRUE,
+			last_fired_at TIMESTAMPTZ,
+			last_status VARCHAR(20),
+			fail_count INTEGER DEFAULT 0,
+			created_at TIMESTAMPTZ DEFAULT NOW(),
+			updated_at TIMESTAMPTZ DEFAULT NOW()
+		);`, s),
+
+		fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s.webhook_deliveries (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			webhook_id UUID REFERENCES %s.webhooks(id) ON DELETE CASCADE,
+			event VARCHAR(100) NOT NULL,
+			payload JSONB NOT NULL,
+			status_code INTEGER,
+			response TEXT,
+			delivered_at TIMESTAMPTZ DEFAULT NOW()
+		);`, s, s),
+
+		fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s.multisig_wallets (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			wallet_id UUID REFERENCES %s.wallets(id) ON DELETE CASCADE,
+			safe_address VARCHAR(255) NOT NULL,
+			network VARCHAR(50) NOT NULL,
+			threshold INTEGER NOT NULL,
+			owners JSONB NOT NULL,
+			nonce INTEGER DEFAULT 0,
+			created_at TIMESTAMPTZ DEFAULT NOW()
+		);`, s, s),
+
+		fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s.multisig_transactions (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			safe_id UUID REFERENCES %s.multisig_wallets(id) ON DELETE CASCADE,
+			to_address VARCHAR(255),
+			value VARCHAR(78),
+			data TEXT,
+			tx_hash VARCHAR(255),
+			confirmations JSONB DEFAULT '{}',
+			executed BOOLEAN DEFAULT FALSE,
+			created_at TIMESTAMPTZ DEFAULT NOW()
+		);`, s, s),
+
+		fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s.hardware_wallets (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			wallet_id UUID REFERENCES %s.wallets(id) ON DELETE CASCADE,
+			device_type VARCHAR(50) NOT NULL,
+			device_id VARCHAR(255),
+			derivation_path VARCHAR(100),
+			address VARCHAR(255) NOT NULL,
+			network VARCHAR(50),
+			connected BOOLEAN DEFAULT TRUE,
+			last_seen TIMESTAMPTZ,
+			created_at TIMESTAMPTZ DEFAULT NOW()
+		);`, s, s),
 	}
 
 	fullSQL := strings.Join(stmts, "\n")

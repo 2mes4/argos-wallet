@@ -32,6 +32,32 @@ class Wallet {
   }
 }
 
+class WalletAddress {
+  final String id;
+  final String walletId;
+  final String network;
+  final String address;
+  final bool isDefault;
+
+  const WalletAddress({
+    required this.id,
+    required this.walletId,
+    required this.network,
+    required this.address,
+    required this.isDefault,
+  });
+
+  factory WalletAddress.fromJson(Map<String, dynamic> json) {
+    return WalletAddress(
+      id: json['id'] as String,
+      walletId: json['wallet_id'] as String,
+      network: json['network'] as String,
+      address: json['address'] as String,
+      isDefault: json['is_default'] as bool? ?? false,
+    );
+  }
+}
+
 class Balance {
   final String network;
   final String token;

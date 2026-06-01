@@ -357,14 +357,19 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 - [x] Dashboard UI with app registration flow
 - [x] SDKs (Go, TypeScript, Dart)
 - [x] Multi-tenant schema isolation
-- [ ] Firebase Firestore real-time sync
-- [ ] Solana support
-- [ ] Account Abstraction (ERC-4337)
-- [ ] Hardware wallet integration
-- [ ] Vault-backed key management (HashiCorp Vault)
-- [ ] Multi-sig wallets
-- [ ] Gas sponsorship / paymasters
-- [ ] Webhook system for transaction events
+- [x] **Webhook system** for transaction events with HMAC signatures
+- [x] **Firebase Firestore** real-time sync
+- [x] **Vault-backed key management** (HashiCorp Vault)
+- [x] **Gas sponsorship / paymaster** framework (ERC-4337)
+- [x] **Solana support** (address derivation, signing, RPC)
+- [x] **Account Abstraction (ERC-4337)** smart accounts
+- [x] **Multi-sig wallets** (Gnosis Safe compatible)
+- [x] **Hardware wallet** integration framework (Ledger, Trezor)
+- [ ] Native mobile SDKs (Swift, Kotlin)
+- [ ] Bitcoin support
+- [ ] Zero-knowledge proof identity
+- [ ] Cross-chain bridge integration
+- [ ] Advanced analytics dashboard
 
 ---
 

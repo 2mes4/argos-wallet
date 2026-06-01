@@ -1,11 +1,20 @@
-name: open_wallet
-description: Official Dart/Flutter SDK for the Open Wallet platform — wallet management, transactions, routing rules, and identity signing.
-version: 0.1.0
-homepage: https://openwallet.dev
-repository: https://github.com/open-wallet/sdk
+name: argos_wallet
+description: Official Dart/Flutter SDK for Argos Wallet — self-hosted multi-tenant wallet infrastructure for Web3. Manage wallets, transactions, routing rules, and identity signing across EVM chains and Solana.
+version: 0.2.0
+homepage: https://github.com/2mes4/argos-wallet
+repository: https://github.com/2mes4/argos-wallet
+issue_tracker: https://github.com/2mes4/argos-wallet/issues
+documentation: https://github.com/2mes4/argos-wallet/tree/main/sdks/dart
 
 environment:
   sdk: ^3.5.0
+
+topics:
+  - crypto
+  - wallet
+  - web3
+  - blockchain
+  - ethereum
 
 dependencies:
   http: ^1.2.0
@@ -14,3 +23,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+
+flutter:
+  # No platform-specific plugins needed — pure Dart.

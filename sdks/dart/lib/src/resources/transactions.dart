@@ -1,7 +1,7 @@
-import '../client.dart';
+import '../resource_base.dart';
 import '../models/transaction.dart';
 
-class TransactionResource extends Resource {
+class TransactionResource extends ArgosResource {
   TransactionResource(super.client);
 
   Future<Transaction> transfer({

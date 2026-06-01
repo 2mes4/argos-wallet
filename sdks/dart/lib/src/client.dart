@@ -1,54 +1,95 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class WalletConfig {
+import 'resources/wallets.dart';
+import 'resources/transactions.dart';
+import 'resources/routing.dart';
+import 'resources/identity.dart';
+import 'resources/webhooks.dart';
+/// Configuration for the Argos Wallet API client.
+class ArgosConfig {
+  /// The API key for authentication.
   final String apiKey;
-  final String baseUrl;
 
-  const WalletConfig({
+  /// The base URL of the Argos Wallet server.
+  final String apiUrl;
+
+  const ArgosConfig({
     required this.apiKey,
-    this.baseUrl = 'https://api.openwallet.dev',
+    this.apiUrl = 'http://localhost:8080',
   });
 }
 
-class WalletApiException implements Exception {
+/// Exception thrown when an API request fails.
+class ArgosApiException implements Exception {
   final int statusCode;
   final String message;
 
-  const WalletApiException({required this.statusCode, required this.message});
+  const ArgosApiException({required this.statusCode, required this.message});
 
   @override
-  String toString() => 'WalletApiException($statusCode): $message';
+  String toString() => 'ArgosApiException($statusCode): $message';
 }
 
-class OpenWalletClient {
-  final WalletConfig config;
+/// The main client for interacting with the Argos Wallet API.
+///
+/// ```dart
+/// final client = ArgosClient(
+///   config: ArgosConfig(
+///     apiKey: 'ow_your_api_key',
+///     apiUrl: 'http://localhost:8080',
+///   ),
+/// );
+///
+/// final wallet = await client.wallets.create(
+///   externalId: 'user-123',
+///   networks: ['polygon'],
+/// );
+/// ```
+class ArgosClient {
+  final ArgosConfig config;
   final http.Client _client;
 
+  /// Wallet management resource.
   late final WalletResource wallets;
+
+  /// Transaction resource.
   late final TransactionResource transactions;
+
+  /// Routing rules resource.
   late final RoutingResource routing;
+
+  /// Identity signing resource.
   late final IdentityResource identity;
 
-  OpenWalletClient(this.config, {http.Client? client})
+  /// Webhooks resource.
+  late final WebhookResource webhooks;
+
+  ArgosClient({required this.config, http.Client? client})
       : _client = client ?? http.Client() {
     wallets = WalletResource(this);
     transactions = TransactionResource(this);
     routing = RoutingResource(this);
     identity = IdentityResource(this);
+    webhooks = WebhookResource(this);
   }
 
-  Future<Map<String, dynamic>> _request(
+  Future<dynamic> _request(
     String method,
     String path, {
     Map<String, dynamic>? body,
+    Map<String, String>? queryParams,
   }) async {
-    final uri = Uri.parse('${config.baseUrl}$path');
+    var uri = Uri.parse('${config.apiUrl}$path');
+    if (queryParams != null && queryParams.isNotEmpty) {
+      uri = uri.replace(queryParameters: queryParams);
+    }
+
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${config.apiKey}',
       'X-API-Key': config.apiKey,
-      'User-Agent': 'openwallet-sdk-dart/0.1.0',
+      'User-Agent': 'argos-wallet-sdk-dart/0.2.0',
     };
 
     late final http.Response response;
@@ -63,13 +104,6 @@ class OpenWalletClient {
           body: body != null ? jsonEncode(body) : null,
         );
         break;
-      case 'PUT':
-        response = await _client.put(
-          uri,
-          headers: headers,
-          body: body != null ? jsonEncode(body) : null,
-        );
-        break;
       case 'DELETE':
         response = await _client.delete(uri, headers: headers);
         break;
@@ -79,25 +113,27 @@ class OpenWalletClient {
 
     if (response.statusCode >= 400) {
       final error = jsonDecode(response.body);
-      throw WalletApiException(
+      throw ArgosApiException(
         statusCode: response.statusCode,
         message: error['error'] ?? response.reasonPhrase ?? 'Unknown error',
       );
     }
 
     if (response.body.isEmpty) return {};
-    return jsonDecode(response.body) as Map<String, dynamic>;
+    return jsonDecode(response.body);
   }
 
-  Future<Map<String, dynamic>> get(String path) => _request('GET', path);
-  Future<Map<String, dynamic>> post(String path, [Map<String, dynamic>? body]) =>
-      _request('POST', path, body: body);
-  Future<Map<String, dynamic>> put(String path, [Map<String, dynamic>? body]) =>
-      _request('PUT', path, body: body);
-  Future<Map<String, dynamic>> delete(String path) => _request('DELETE', path);
-}
+  /// Performs a GET request.
+  Future<dynamic> get(String path, {Map<String, String>? queryParams}) =>
+      _request('GET', path, queryParams: queryParams);
 
-abstract class Resource {
-  final OpenWalletClient client;
-  Resource(this.client);
+  /// Performs a POST request.
+  Future<dynamic> post(String path, [Map<String, dynamic>? body]) =>
+      _request('POST', path, body: body);
+
+  /// Performs a DELETE request.
+  Future<dynamic> delete(String path) => _request('DELETE', path);
+
+  /// Closes the underlying HTTP client.
+  void close() => _client.close();
 }

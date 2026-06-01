@@ -1,7 +1,7 @@
-import '../client.dart';
+import '../resource_base.dart';
 import '../models/routing_rule.dart';
 
-class RoutingResource extends Resource {
+class RoutingResource extends ArgosResource {
   RoutingResource(super.client);
 
   Future<RoutingRule> createRule({
