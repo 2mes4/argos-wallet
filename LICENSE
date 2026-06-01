@@ -1,0 +1,65 @@
+Business Source License 1.1
+
+Parameters
+
+Licensor:             Eric (2mes4)
+Licensed Work:        Argos Wallet — Multi-tenant wallet infrastructure platform
+Additional Use Grant: See below
+Change Date:          2028-01-01
+Change License:       Apache License, Version 2.0
+
+Additional Use Grant:
+You may use the Licensed Work for any purpose, including commercial use,
+provided that you do not offer the Licensed Work as a hosted or cloud
+service to third parties. Specifically:
+
+1. You MAY self-host the Licensed Work for your own applications, users,
+   customers, or internal use.
+
+2. You MAY build and sell products, applications, or services that use
+   or integrate with the Licensed Work.
+
+3. You MAY modify, fork, and distribute the Licensed Work subject to
+   these terms.
+
+4. You MAY NOT offer the Licensed Work itself as a managed service,
+   SaaS product, or cloud-hosted service to third parties where the
+   primary value proposition is providing wallet infrastructure
+   similar to Argos Wallet.
+
+For commercial licensing inquiries, including the right to offer Argos
+Wallet as a hosted service, contact: eric@2mes4.com
+
+Terms
+
+The Licensor hereby grants you a non-exclusive, worldwide,
+non-sublicensable, non-transferable license to use the Licensed Work,
+subject to the conditions set forth in this License.
+
+This License does not grant you any rights to use the Licensor's
+trademarks, service marks, or similar rights.
+
+Change License: On the Change Date, this License will automatically
+change to the Change License specified above, at which point all
+restrictions in this License will be terminated.
+
+For the full text of the Business Source License 1.1, see:
+https://mariadb.com/bsl11/
+
+---
+
+Apache License, Version 2.0 (Change License)
+
+Copyright 2024 Eric (2mes4)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.

@@ -1,0 +1,16 @@
+name: open_wallet
+description: Official Dart/Flutter SDK for the Open Wallet platform — wallet management, transactions, routing rules, and identity signing.
+version: 0.1.0
+homepage: https://openwallet.dev
+repository: https://github.com/open-wallet/sdk
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  http: ^1.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0

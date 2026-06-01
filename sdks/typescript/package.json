@@ -1,0 +1,20 @@
+{
+  "name": "@open-wallet/sdk-typescript",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Open Wallet TypeScript SDK monorepo",
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "test": "turbo test",
+    "lint": "turbo lint",
+    "clean": "turbo clean",
+    "typecheck": "turbo typecheck"
+  },
+  "devDependencies": {
+    "turbo": "^2.4.0",
+    "typescript": "^5.7.0"
+  },
+  "packageManager": "npm@10.9.0"
+}

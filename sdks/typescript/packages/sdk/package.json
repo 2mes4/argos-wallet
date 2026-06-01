@@ -1,0 +1,33 @@
+{
+  "name": "@open-wallet/sdk",
+  "version": "0.1.0",
+  "description": "Official TypeScript SDK for the Open Wallet platform",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "node --experimental-vm-modules ../../../../node_modules/.bin/jest",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/open-wallet/sdk",
+    "directory": "sdks/typescript/packages/sdk"
+  },
+  "keywords": ["open-wallet", "sdk", "wallet", "web3", "crypto", "blockchain"]
+}

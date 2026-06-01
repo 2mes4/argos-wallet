@@ -1,0 +1,35 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /tenants/{tenantId} {
+      allow read: if request.auth != null
+        && request.auth.token.tenantId == tenantId;
+
+      match /wallets/{walletId} {
+        allow read: if request.auth != null
+          && request.auth.token.tenantId == tenantId;
+
+        match /balances/{balanceId} {
+          allow read: if request.auth != null
+            && request.auth.token.tenantId == tenantId;
+        }
+      }
+
+      match /transactions/{txId} {
+        allow read: if request.auth != null
+          && request.auth.token.tenantId == tenantId;
+      }
+
+      match /events/{eventId} {
+        allow read: if request.auth != null
+          && request.auth.token.tenantId == tenantId;
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
